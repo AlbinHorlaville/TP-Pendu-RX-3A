@@ -152,7 +152,6 @@ void client_appli (char *serveur,char *service)
 		// Récupération du nombre de caractère du mot
 		h_reads(socket,tampon, 1);
 		nb_octets = atoi(tampon);
-		printf("NB_OCTETS : %d", nb_octets);
 
 		// Récupération du mot
 		char mot[nb_octets];
@@ -190,7 +189,6 @@ void client_appli (char *serveur,char *service)
 	else{
 		printf("\033[32m%s\033[00m", tampon4);
 	}
-	printf("\033[32m%s\033[00m", tampon);
 	h_close(socket);
 }
 
