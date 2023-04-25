@@ -120,6 +120,7 @@ void client_appli (char *serveur,char *service)
 	adr_socket(service, serveur, SOCK_STREAM, &p_adr_serv);
 	h_connect(socket, p_adr_serv);
 
+
 	/* Affectation d'un tampon */
 	char *tampon = malloc(sizeof(tampon));
 
@@ -128,9 +129,22 @@ void client_appli (char *serveur,char *service)
 	int nb_octets;
 	h_reads(socket, tampon, 110);
 	printf("\033[32m%s\033[00m", tampon);
+	
+	char *tampon2 = malloc(sizeof(tampon2));
+	h_reads(socket, tampon2, 35);
 
+	printf("\033[31m%s\033[00m", tampon2);
 
-	char* mot, *coeurs;
+	// Difficulte
+	char carac[100];
+	int c;
+	c = getc(stdin);
+	while(c == '\n'){
+		c = getc(stdin);
+	}
+	carac[0] = c;
+	h_writes(socket, carac, 1);
+	char *coeurs;
 
 	/* Boucle de gameplay, se termine quand le joueur a gagné ou perdu */
 	while(!end){
@@ -138,21 +152,21 @@ void client_appli (char *serveur,char *service)
 		// Récupération du nombre de caractère du mot
 		h_reads(socket,tampon, 1);
 		nb_octets = atoi(tampon);
+		printf("NB_OCTETS : %d", nb_octets);
 
 		// Récupération du mot
 		char mot[nb_octets];
 		h_reads(socket, mot, nb_octets);
 		
-		printf("mot : %s\n", mot);
-		// Récupération des coeurs (5)
-		char tampon3[5];
-		h_reads(socket, tampon3, 5);
+		printf("\033[36mmot : %s\n\033[00m", mot);
+		// Récupération des coeurs
+		char tampon3[nb_octets];
+		h_reads(socket, tampon3, nb_octets);
 		coeurs = tampon3;
-		printf("%s\n", coeurs);
+		printf("\033[36mPoints de vie : %s\033[00m\n", coeurs);
 
 
-		// Ecriture / Proposition d'une lettre
-
+		// Proposition d'une lettre ou de plusieurs lettres
 		char carac[100];
 		int c;
 		c = getc(stdin);
@@ -162,17 +176,21 @@ void client_appli (char *serveur,char *service)
 		carac[0] = c;
 		h_writes(socket, carac, 1);
 
-		printf("Récupération de end\n");
 		// Récupération de l'octet end
 		h_reads(socket, tampon, 1);
 		end = atoi(tampon);
-		
-
 	}
 
 	/* Affichage message fin */
-	h_reads(socket, tampon, 18);
-	printf("%s", tampon);
+	char *tampon4 = malloc(sizeof(tampon4));
+	h_reads(socket, tampon4, 18);
+	if (tampon4[12]=='P'){
+		printf("\033[35m%s\033[00m", tampon4);
+	}
+	else{
+		printf("\033[32m%s\033[00m", tampon4);
+	}
+	printf("\033[32m%s\033[00m", tampon);
 	h_close(socket);
 }
 
